@@ -255,6 +255,21 @@
             Go Back
         </button>
     </form>
+    <form th:action="@{/}" method="get" style="display:flex; justify-content:center; align-items:center; gap:12px; margin: 24px 0;">
+        <select name="priorityFilter" class="apple-select" style="min-width:110px;">
+            <option value="">All Priorities</option>
+            <option value="1" th:selected="${priorityFilter == 1}">High</option>
+            <option value="2" th:selected="${priorityFilter == 2}">Medium</option>
+            <option value="3" th:selected="${priorityFilter == 3}">Low</option>
+        </select>
+        <select name="completedFilter" class="apple-select" style="min-width:110px;">
+            <option value="">All Status</option>
+            <option value="false" th:selected="${completedFilter == false}">Incomplete</option>
+            <option value="true" th:selected="${completedFilter == true}">Completed</option>
+        </select>
+        <input type="date" name="dueDateFilter" th:value="${dueDateFilter}" class="apple-input" style="min-width:140px;" />
+        <button type="submit" class="apple-btn" style="padding:10px 24px;">Filter</button>
+    </form>
 </div>
 <div id="popupNoResults" class="popup-message" th:if="${noResults}">
     <button class="popup-close" onclick="closePopup('popupNoResults')">&times;</button>
@@ -294,9 +309,29 @@
             <form th:action="@{/delete/{id}(id=${task.id})}" method="post" style="display:inline">
                 <button type="submit" class="apple-btn" style="background:#ff3b30;padding:6px 18px;font-size:14px;">Delete</button>
             </form>
+            <button type="button" class="apple-btn" style="background:#ffcc00;padding:6px 18px;font-size:14px;color:#222;"
+                th:attr="onclick=|openEditModal(${task.id}, '${#strings.escapeJavaScript(task.description)}', ${task.priority}, '${task.dueDate}')|">
+                Edit
+            </button>
         </td>
     </tr>
 </table>
+<div id="editModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.15); z-index:2000; align-items:center; justify-content:center;">
+    <form id="editForm" th:action="@{/edit}" method="post" style="background:#fff; border-radius:18px; padding:32px 40px; box-shadow:0 4px 24px rgba(0,0,0,0.10); min-width:320px; display:flex; flex-direction:column; gap:16px;">
+        <input type="hidden" name="id" id="editId" />
+        <input type="text" name="description" id="editDescription" class="apple-input" required placeholder="Task" />
+        <select name="priority" id="editPriority" class="apple-select">
+            <option value="1">High</option>
+            <option value="2">Medium</option>
+            <option value="3">Low</option>
+        </select>
+        <input type="date" name="dueDate" id="editDueDate" class="apple-input" />
+        <div style="display:flex; gap:12px; justify-content:flex-end;">
+            <button type="button" onclick="closeEditModal()" class="apple-btn" style="background:#eee;color:#222;">Cancel</button>
+            <button type="submit" class="apple-btn" style="background:#007aff;">Save</button>
+        </div>
+    </form>
+</div>
 <script>
     // Show popups if present
     window.onload = function() {
@@ -312,6 +347,16 @@
     function closePopup(id) {
         var popup = document.getElementById(id);
         if (popup) popup.style.display = 'none';
+    }
+    function openEditModal(id, desc, priority, dueDate) {
+        document.getElementById('editId').value = id;
+        document.getElementById('editDescription').value = desc;
+        document.getElementById('editPriority').value = priority;
+        document.getElementById('editDueDate').value = dueDate && dueDate !== 'null' ? dueDate : '';
+        document.getElementById('editModal').style.display = 'flex';
+    }
+    function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none';
     }
 </script>
 </body>

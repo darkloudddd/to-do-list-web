@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +22,18 @@ public class WebController {
     }
 
     @GetMapping("/")
-    public String index(Model model, @RequestParam(defaultValue = "priority") String sortBy) {
-        model.addAttribute("tasks", taskService.getAllTasks(sortBy));
+    public String index(
+        @RequestParam(required = false) Integer priorityFilter,
+        @RequestParam(required = false) Boolean completedFilter,
+        @RequestParam(required = false) String dueDateFilter,
+        Model model
+    ) {
+        List<Task> tasks = taskService.getFilteredTasks(priorityFilter, completedFilter, dueDateFilter);
+        model.addAttribute("tasks", tasks);
         model.addAttribute("newTask", new Task());
+        model.addAttribute("priorityFilter", priorityFilter);
+        model.addAttribute("completedFilter", completedFilter);
+        model.addAttribute("dueDateFilter", dueDateFilter);
         return "index";
     }
 
@@ -63,5 +74,14 @@ public class WebController {
             model.addAttribute("tasks", results);
         }
         return "index";
+    }
+
+    @PostMapping("/edit")
+    public String editTask(@RequestParam Long id,
+                       @RequestParam String description,
+                       @RequestParam Integer priority,
+                       @RequestParam(required = false) String dueDate) {
+        taskService.editTask(id, description, priority, dueDate);
+        return "redirect:/";
     }
 }

@@ -62,4 +62,25 @@ public class TaskService {
         return tasks.values().stream()
                 .anyMatch(task -> task.getDescription().equalsIgnoreCase(description));
     }
+
+    public void editTask(Long id, String description, Integer priority, String dueDate) {
+        Task task = tasks.get(id);
+        if (task != null) {
+            task.setDescription(description);
+            task.setPriority(priority);
+            task.setDueDate(dueDate == null || dueDate.isEmpty() ? null : java.time.LocalDate.parse(dueDate));
+        }
+    }
+
+    public List<Task> getFilteredTasks(Integer priority, Boolean completed, String dueDate) {
+        return tasks.values().stream()
+            .filter(t -> priority == null || t.getPriority() == priority)
+            .filter(t -> completed == null || t.isCompleted() == completed)
+            .filter(t -> dueDate == null || dueDate.isEmpty() || (t.getDueDate() != null && t.getDueDate().equals(dueDate)))
+            .sorted(Comparator
+                .comparing(Task::isCompleted)
+                .thenComparing(Task::getDueDate, Comparator.nullsLast(Comparator.naturalOrder()))
+                .thenComparing(Task::getPriority))
+            .collect(Collectors.toList());
+    }
 }
