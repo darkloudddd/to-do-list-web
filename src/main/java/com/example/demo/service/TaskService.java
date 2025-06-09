@@ -25,16 +25,11 @@ public class TaskService {
     }
 
     public List<Task> getAllTasks(String sortBy) {
-        Comparator<Task> comparator;
-        if ("dueDatePriority".equalsIgnoreCase(sortBy)) {
-            comparator = Comparator
-                .comparing(Task::getDueDate, Comparator.nullsLast(Comparator.naturalOrder()))
-                .thenComparing(Task::getPriority);
-        } else if ("priority".equalsIgnoreCase(sortBy)) {
-            comparator = Comparator.comparing(Task::getPriority);
-        } else {
-            comparator = Comparator.comparing(Task::getDueDate, Comparator.nullsLast(Comparator.naturalOrder()));
-        }
+        Comparator<Task> comparator = Comparator
+            .comparing(Task::isCompleted) // false (not completed) comes before true (completed)
+            .thenComparing(Task::getDueDate, Comparator.nullsLast(Comparator.naturalOrder()))
+            .thenComparing(Task::getPriority);
+
         return tasks.values().stream()
             .sorted(comparator)
             .collect(Collectors.toList());
