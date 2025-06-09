@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>To-Do List</title>
+    <style>
+        body {
+            font-family: 'San Francisco', 'Segoe UI', 'Arial', 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f6fa;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            color: #111;
+            margin-top: 48px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            font-size: 2.8rem;
+            text-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1.5px 4px rgba(0,0,0,0.03);
+            background: linear-gradient(90deg, #007aff 0%, #34c759 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        form {
+            margin: 24px auto 0 auto;
+            text-align: center;
+        }
+        .apple-card {
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1.5px 4px rgba(0,0,0,0.03);
+            padding: 32px 40px 24px 40px;
+            max-width: 600px;
+            margin: 32px auto 0 auto;
+        }
+        .apple-input, .apple-select {
+            padding: 12px 18px;
+            border: 1px solid #e0e0e5;
+            border-radius: 16px;
+            font-size: 16px;
+            background: #f9f9fa;
+            margin: 0 8px 0 0;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .apple-input:focus, .apple-select:focus {
+            border-color: #007aff;
+            background: #fff;
+        }
+        .apple-btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(90deg, #007aff 60%, #0051a8 100%);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-left: 8px;
+            box-shadow: 0 2px 8px rgba(0,122,255,0.08);
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .apple-btn:disabled {
+            background: #d1d1d6;
+            color: #fff;
+            cursor: not-allowed;
+        }
+        .apple-btn:hover:not(:disabled) {
+            background: linear-gradient(90deg, #0051a8 60%, #007aff 100%);
+            box-shadow: 0 4px 16px rgba(0,122,255,0.12);
+        }
+        .search-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 28px;
+        }
+        .search-input {
+            padding: 12px 20px;
+            border: 1px solid #e0e0e5;
+            border-radius: 20px 0 0 20px;
+            outline: none;
+            font-size: 16px;
+            background: #f9f9fa;
+            width: 260px;
+            transition: border 0.2s;
+        }
+        .search-input:focus {
+            border-color: #007aff;
+            background: #fff;
+        }
+        .search-btn, .goback-btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 0 20px 20px 0;
+            background: linear-gradient(90deg, #007aff 60%, #0051a8 100%);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .search-btn:hover, .goback-btn:hover {
+            background: linear-gradient(90deg, #0051a8 60%, #007aff 100%);
+        }
+        .goback-btn {
+            margin-left: 8px;
+            border-radius: 20px;
+            background: #e0e0e5;
+            color: #222;
+            font-weight: 500;
+        }
+        .goback-btn:hover {
+            background: #d1d1d6;
+            color: #007aff;
+        }
+        table {
+            width: 90%;
+            margin: 32px auto 0 auto;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1.5px 4px rgba(0,0,0,0.03);
+            overflow: hidden;
+        }
+        th, td {
+            padding: 18px 12px;
+            border-bottom: 1px solid #f0f0f5;
+            text-align: center;
+            font-size: 16px;
+        }
+        th {
+            background: #f5f6fa;
+            color: #222;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:hover td {
+            background: #f0f4ff;
+        }
+        .priority-high {
+            color: #ff3b30;
+            font-weight: 600;
+        }
+        .priority-medium {
+            color: #ff9500;
+            font-weight: 600;
+        }
+        .priority-low {
+            color: #34c759;
+            font-weight: 600;
+        }
+        .popup-message {
+            display: none;
+            position: fixed;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            color: #222;
+            border: 1px solid #e0e0e5;
+            padding: 18px 40px 18px 18px;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+            z-index: 1000;
+            font-size: 16px;
+        }
+        .popup-message.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        .popup-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            float: right;
+            cursor: pointer;
+            color: #aaa;
+        }
+        .popup-close:hover {
+            color: #ff3b30;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        .add-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .apple-input, .apple-select {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        .apple-btn {
+            flex: 0 0 auto;
+            margin-left: 0;
+            margin-top: 0;
+        }
+        .add-form .apple-input[type="text"] {
+            min-width: 140px;
+            max-width: 200px;
+        }
+        .add-form .apple-select {
+            min-width: 100px;
+        }
+        .add-form .apple-input[type="date"] {
+            min-width: 140px;
+        }
+    </style>
+</head>
+<body>
+<h1 style="
+    text-align: center;
+    color: #111;
+    margin-top: 48px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    font-size: 2.8rem;
+    text-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1.5px 4px rgba(0,0,0,0.03);
+    background: linear-gradient(90deg, #007aff 0%, #34c759 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+">
+    <span style="font-family: 'SF Pro Display', 'San Francisco', 'Segoe UI', Arial, sans-serif;">To-Do List</span>
+</h1>
+<div class="apple-card">
+    <form th:action="@{/add}" th:object="${newTask}" method="post" class="add-form">
+        <input type="text" th:field="*{description}" required placeholder="Task" class="apple-input" />
+        <select th:field="*{priority}" class="apple-select">
+            <option value="1">High</option>
+            <option value="2">Medium</option>
+            <option value="3">Low</option>
+        </select>
+        <input type="date" th:field="*{dueDate}" class="apple-input" />
+        <button type="submit" class="apple-btn">Add Task</button>
+    </form>
+    <form th:action="@{/search}" method="get" class="search-form">
+        <input type="text" name="keyword" th:value="${keyword}" placeholder="Search tasks..." class="search-input" />
+        <button type="submit" class="search-btn">Search</button>
+        <button type="button"
+                th:if="${keyword != null and keyword != '' and (noResults == null or noResults == false)}"
+                onclick="window.location.href='/'"
+                class="goback-btn">
+            Go Back
+        </button>
+    </form>
+</div>
+<div id="popupNoResults" class="popup-message" th:if="${noResults}">
+    <button class="popup-close" onclick="closePopup('popupNoResults')">&times;</button>
+    No tasks found for your search!
+</div>
+<div id="popupAlreadyExist" class="popup-message" th:if="${alreadyExist}">
+    <button class="popup-close" onclick="closePopup('popupAlreadyExist')">&times;</button>
+    Already exist!
+</div>
+<table>
+    <tr>
+        <th>Task</th>
+        <th>Priority</th>
+        <th>Due Date</th>
+        <th>Completed</th>
+        <th>Actions</th>
+    </tr>
+    <tr th:if="${#lists.isEmpty(tasks)}">
+        <td colspan="5" style="text-align:center;">No tasks to display.</td>
+    </tr>
+    <tr th:each="task : ${tasks}">
+        <td th:text="${task.description}"></td>
+        <td>
+            <span th:if="${task.priority == 1}" class="priority-high">High</span>
+            <span th:if="${task.priority == 2}" class="priority-medium">Medium</span>
+            <span th:if="${task.priority == 3}" class="priority-low">Low</span>
+        </td>
+        <td th:text="${task.dueDate}"></td>
+        <td>
+            <span th:if="${task.completed}" style="color:#34c759;font-weight:600;">✔</span>
+            <span th:unless="${task.completed}" style="color:#aaa;">—</span>
+        </td>
+        <td>
+            <form th:action="@{/complete/{id}(id=${task.id})}" method="post" style="display:inline">
+                <button type="submit" th:disabled="${task.completed}" class="apple-btn" style="padding:6px 18px;font-size:14px;">Complete</button>
+            </form>
+            <form th:action="@{/delete/{id}(id=${task.id})}" method="post" style="display:inline">
+                <button type="submit" class="apple-btn" style="background:#ff3b30;padding:6px 18px;font-size:14px;">Delete</button>
+            </form>
+        </td>
+    </tr>
+</table>
+<script>
+    // Show popups if present
+    window.onload = function() {
+        var noResults = document.getElementById('popupNoResults');
+        var alreadyExist = document.getElementById('popupAlreadyExist');
+        if (noResults) {
+            noResults.classList.add('show');
+        }
+        if (alreadyExist) {
+            alreadyExist.classList.add('show');
+        }
+    };
+    function closePopup(id) {
+        var popup = document.getElementById(id);
+        if (popup) popup.style.display = 'none';
+    }
+</script>
+</body>
+</html>
