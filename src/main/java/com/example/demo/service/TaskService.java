@@ -90,4 +90,17 @@ public class TaskService {
             .filter(task -> username != null && username.equals(task.getUsername()))
             .collect(Collectors.toList());
     }
+
+    public List<Task> getFilteredTasksByUsername(String username, Integer priorityFilter, Boolean completedFilter, String dueDateFilter) {
+        return tasks.values().stream()
+            .filter(task -> username != null && username.equals(task.getUsername()))
+            .filter(task -> priorityFilter == null || task.getPriority() == priorityFilter)
+            .filter(task -> completedFilter == null || task.isCompleted() == completedFilter)
+            .filter(task -> {
+                if (dueDateFilter == null || dueDateFilter.isEmpty()) return true;
+                if (task.getDueDate() == null) return false;
+                return task.getDueDate().toString().equals(dueDateFilter);
+            })
+            .collect(Collectors.toList());
+    }
 }

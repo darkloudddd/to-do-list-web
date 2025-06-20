@@ -25,13 +25,19 @@ public class WebController {
 
     @GetMapping("/tasks")
     public String index(
-        HttpSession session, 
+        @RequestParam(required = false) Integer priorityFilter,
+        @RequestParam(required = false) Boolean completedFilter,
+        @RequestParam(required = false) String dueDateFilter,
+        HttpSession session,
         Model model
     ) {
         String username = (String) session.getAttribute("username");
-        List<Task> tasks = taskService.getTasksByUsername(username);
+        List<Task> tasks = taskService.getFilteredTasksByUsername(username, priorityFilter, completedFilter, dueDateFilter);
         model.addAttribute("tasks", tasks);
         model.addAttribute("newTask", new Task());
+        model.addAttribute("priorityFilter", priorityFilter);
+        model.addAttribute("completedFilter", completedFilter);
+        model.addAttribute("dueDateFilter", dueDateFilter);
         return "index";
     }
 
@@ -61,14 +67,21 @@ public class WebController {
     }
 
     @GetMapping("/search")
-    public String searchTasks(@RequestParam String keyword, Model model) {
-        var results = taskService.searchTasks(keyword);
+    public String searchTasks(@RequestParam String keyword, HttpSession session, Model model) {
+        String username = (String) session.getAttribute("username");
+        if (username == null) {
+            return "redirect:/login";
+        }
+        var results = taskService.searchTasks(keyword)
+            .stream()
+            .filter(task -> username.equals(task.getUsername()))
+            .toList();
         model.addAttribute("newTask", new Task());
         model.addAttribute("keyword", keyword);
         if (results.isEmpty()) {
             model.addAttribute("noResults", true);
             // Show all tasks if no results
-            model.addAttribute("tasks", taskService.getAllTasks("priority"));
+            model.addAttribute("tasks", taskService.getTasksByUsername(username));
         } else {
             model.addAttribute("tasks", results);
         }

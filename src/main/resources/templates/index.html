@@ -2,6 +2,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>To-Do List</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <style>
         body {
             font-family: 'San Francisco', 'Segoe UI', 'Arial', 'Helvetica Neue', Arial, sans-serif;
@@ -257,12 +260,12 @@
         <button type="submit" class="search-btn">Search</button>
         <button type="button"
                 th:if="${keyword != null and keyword != '' and (noResults == null or noResults == false)}"
-                onclick="window.location.href='/'"
+                onclick="window.location.href='/tasks'"
                 class="goback-btn">
             Go Back
         </button>
     </form>
-    <form th:action="@{/}" method="get" style="display:flex; justify-content:center; align-items:center; gap:12px; margin: 24px 0;">
+    <form th:action="@{/tasks}" method="get" style="display:flex; justify-content:center; align-items:center; gap:12px; margin: 24px 0;">
         <select name="priorityFilter" class="apple-select" style="min-width:110px;">
             <option value="">All Priorities</option>
             <option value="1" th:selected="${priorityFilter == 1}">High</option>
