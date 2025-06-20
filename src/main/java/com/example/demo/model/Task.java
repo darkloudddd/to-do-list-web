@@ -9,6 +9,7 @@ public class Task {
     private int priority; // 1=High, 2=Medium, 3=Low
     private LocalDate dueDate;
     private boolean completed;
+    private String username;
 
     // Constructors, getters, setters
     public Task() {
@@ -50,6 +51,12 @@ public class Task {
     public void setCompleted(boolean completed) {
         this.completed = completed;
     }
+    public String getUsername() {
+        return username;
+    }
+    public void setUsername(String username) {
+        this.username = username;
+    }
     @Override
     public String toString() {
         return "Task{" +
@@ -58,6 +65,7 @@ public class Task {
                 ", priority=" + priority +
                 ", dueDate=" + dueDate +
                 ", completed=" + completed +
+                ", username='" + username + '\'' +
                 '}';
     }
     // Optionally, you can generate equals() and hashCode() methods
@@ -70,11 +78,12 @@ public class Task {
                 completed == task.completed &&
                 Objects.equals(id, task.id) &&
                 Objects.equals(description, task.description) &&
-                Objects.equals(dueDate, task.dueDate);
+                Objects.equals(dueDate, task.dueDate) &&
+                Objects.equals(username, task.username);
     }
     @Override
     public int hashCode() {
-        return Objects.hash(id, description, priority, dueDate, completed);
+        return Objects.hash(id, description, priority, dueDate, completed, username);
     }
     
     // ...generate with IDE or Lombok...
@@ -87,6 +96,7 @@ public class Task {
         private int priority;
         private LocalDate dueDate;
         private boolean completed;
+        private String username;
 
         public TaskBuilder id(Long id) {
             this.id = id;
@@ -106,6 +116,10 @@ public class Task {
         }
         public TaskBuilder completed(boolean completed) {
             this.completed = completed;
+            return this;
+        }
+        public TaskBuilder username(String username) {
+            this.username = username;
             return this;
         }
         public Task build() {

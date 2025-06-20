@@ -216,6 +216,13 @@
         .add-form .apple-input[type="date"] {
             min-width: 140px;
         }
+        #logoutForm {
+            position: absolute;
+            top: 24px;
+            right: 40px;
+            z-index: 100;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -332,6 +339,9 @@
         </div>
     </form>
 </div>
+<form th:action="@{/logout}" method="post" id="logoutForm">
+    <button type="submit" class="apple-btn" style="background:#ff3b30;">Logout</button>
+</form>
 <script>
     // Show popups if present
     window.onload = function() {

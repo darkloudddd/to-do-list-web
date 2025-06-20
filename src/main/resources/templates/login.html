@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+    <style>
+        body {
+            font-family: 'San Francisco', 'Segoe UI', Arial, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f6fa;
+            margin: 0;
+            padding: 0;
+        }
+        .apple-card {
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1.5px 4px rgba(0,0,0,0.03);
+            padding: 40px 40px 32px 40px;
+            max-width: 400px;
+            margin: 80px auto 0 auto;
+        }
+        .apple-input {
+            padding: 12px 18px;
+            border: 1px solid #e0e0e5;
+            border-radius: 16px;
+            font-size: 16px;
+            background: #f9f9fa;
+            margin-bottom: 18px;
+            width: 100%;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .apple-input:focus {
+            border-color: #007aff;
+            background: #fff;
+        }
+        .apple-btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(90deg, #007aff 60%, #0051a8 100%);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+            box-shadow: 0 2px 8px rgba(0,122,255,0.08);
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .apple-btn:hover:not(:disabled) {
+            background: linear-gradient(90deg, #0051a8 60%, #007aff 100%);
+            box-shadow: 0 4px 16px rgba(0,122,255,0.12);
+        }
+        .apple-link {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            color: #007aff;
+            text-decoration: none;
+            font-size: 15px;
+        }
+        .apple-link:hover {
+            text-decoration: underline;
+        }
+        .message {
+            color: #ff3b30;
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 15px;
+        }
+        h2 {
+            text-align: center;
+            color: #111;
+            font-weight: 700;
+            letter-spacing: 1px;
+            font-size: 2rem;
+            margin-bottom: 32px;
+            background: linear-gradient(90deg, #007aff 0%, #34c759 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+    <div class="apple-card">
+        <h2>Login</h2>
+        <form th:action="@{/auth/login}" method="post">
+            <div th:if="${message}" class="message" th:text="${message}"></div>
+            <input type="text" name="username" placeholder="Username" class="apple-input" required />
+            <input type="password" name="password" placeholder="Password" class="apple-input" required />
+            <button type="submit" class="apple-btn">Login</button>
+        </form>
+        <a th:href="@{/register}" class="apple-link">Don't have an account? Register</a>
+    </div>
+</body>
+</html>

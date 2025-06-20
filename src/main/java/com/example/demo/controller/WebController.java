@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.demo.model.Task;
 import com.example.demo.service.TaskService;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 public class WebController {
     private final TaskService taskService;
@@ -21,44 +23,41 @@ public class WebController {
         this.taskService = taskService;
     }
 
-    @GetMapping("/")
+    @GetMapping("/tasks")
     public String index(
-        @RequestParam(required = false) Integer priorityFilter,
-        @RequestParam(required = false) Boolean completedFilter,
-        @RequestParam(required = false) String dueDateFilter,
+        HttpSession session, 
         Model model
     ) {
-        List<Task> tasks = taskService.getFilteredTasks(priorityFilter, completedFilter, dueDateFilter);
+        String username = (String) session.getAttribute("username");
+        List<Task> tasks = taskService.getTasksByUsername(username);
         model.addAttribute("tasks", tasks);
         model.addAttribute("newTask", new Task());
-        model.addAttribute("priorityFilter", priorityFilter);
-        model.addAttribute("completedFilter", completedFilter);
-        model.addAttribute("dueDateFilter", dueDateFilter);
         return "index";
     }
 
     @PostMapping("/add")
-    public String addTask(@ModelAttribute Task newTask, Model model) {
+    public String addTask(@ModelAttribute Task newTask, HttpSession session, Model model) {
+        String username = (String) session.getAttribute("username");
         if (taskService.existsByDescription(newTask.getDescription())) {
             model.addAttribute("alreadyExist", true);
-            model.addAttribute("tasks", taskService.getAllTasks("priority"));
+            model.addAttribute("tasks", taskService.getTasksByUsername(username));
             model.addAttribute("newTask", new Task());
             return "index";
         }
-        taskService.addTask(newTask);
-        return "redirect:/";
+        taskService.addTask(newTask, username);
+        return "redirect:/tasks";
     }
 
     @PostMapping("/complete/{id}")
     public String completeTask(@PathVariable Long id) {
         taskService.completeTask(id);
-        return "redirect:/";
+        return "redirect:/tasks";
     }
 
     @PostMapping("/delete/{id}")
     public String deleteTask(@PathVariable Long id) {
         taskService.removeTask(id);
-        return "redirect:/";
+        return "redirect:/tasks";
     }
 
     @GetMapping("/search")
@@ -82,6 +81,22 @@ public class WebController {
                        @RequestParam Integer priority,
                        @RequestParam(required = false) String dueDate) {
         taskService.editTask(id, description, priority, dueDate);
-        return "redirect:/";
+        return "redirect:/tasks";
+    }
+
+    @GetMapping("/tasks-ui")
+    public String tasksUi(
+        @RequestParam(required = false) Integer priorityFilter,
+        @RequestParam(required = false) Boolean completedFilter,
+        @RequestParam(required = false) String dueDateFilter,
+        Model model
+    ) {
+        List<Task> tasks = taskService.getFilteredTasks(priorityFilter, completedFilter, dueDateFilter);
+        model.addAttribute("tasks", tasks);
+        model.addAttribute("newTask", new Task());
+        model.addAttribute("priorityFilter", priorityFilter);
+        model.addAttribute("completedFilter", completedFilter);
+        model.addAttribute("dueDateFilter", dueDateFilter);
+        return "index";
     }
 }

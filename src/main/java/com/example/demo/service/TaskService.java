@@ -17,9 +17,10 @@ public class TaskService {
     private final Map<Long, Task> tasks = new HashMap<>();
     private final AtomicLong idCounter = new AtomicLong();
 
-    public Task addTask(Task task) {
+    public Task addTask(Task task, String username) {
         long id = idCounter.incrementAndGet();
         task.setId(id);
+        task.setUsername(username);
         tasks.put(id, task);
         return task;
     }
@@ -81,6 +82,12 @@ public class TaskService {
                 .comparing(Task::isCompleted)
                 .thenComparing(Task::getDueDate, Comparator.nullsLast(Comparator.naturalOrder()))
                 .thenComparing(Task::getPriority))
+            .collect(Collectors.toList());
+    }
+
+    public List<Task> getTasksByUsername(String username) {
+        return tasks.values().stream()
+            .filter(task -> username != null && username.equals(task.getUsername()))
             .collect(Collectors.toList());
     }
 }

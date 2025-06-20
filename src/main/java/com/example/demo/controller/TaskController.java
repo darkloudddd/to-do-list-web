@@ -1,13 +1,22 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Task;
-import com.example.demo.service.TaskService;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.model.Task;
+import com.example.demo.service.TaskService;
+
 @RestController
-@RequestMapping("/tasks")
+@RequestMapping("/api/tasks")
 public class TaskController {
     private final TaskService taskService;
 
@@ -16,8 +25,8 @@ public class TaskController {
     }
 
     @PostMapping
-    public Task addTask(@RequestBody Task task) {
-        return taskService.addTask(task);
+    public Task addTask(@RequestBody Task task, @RequestParam String user) {
+        return taskService.addTask(task, user);
     }
 
     @GetMapping
