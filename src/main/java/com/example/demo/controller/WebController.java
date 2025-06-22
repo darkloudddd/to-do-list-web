@@ -44,7 +44,7 @@ public class WebController {
     @PostMapping("/add")
     public String addTask(@ModelAttribute Task newTask, HttpSession session, Model model) {
         String username = (String) session.getAttribute("username");
-        if (taskService.existsByDescription(newTask.getDescription())) {
+        if (taskService.existsByDescription(newTask.getDescription(), username)) {
             model.addAttribute("alreadyExist", true);
             model.addAttribute("tasks", taskService.getTasksByUsername(username));
             model.addAttribute("newTask", new Task());

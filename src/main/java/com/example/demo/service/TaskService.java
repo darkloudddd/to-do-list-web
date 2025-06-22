@@ -59,9 +59,12 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
 
-    public boolean existsByDescription(String description) {
+    public boolean existsByDescription(String description, String username) {
         return tasks.values().stream()
-                .anyMatch(task -> task.getDescription().equalsIgnoreCase(description));
+                .anyMatch(task -> 
+                    task.getUsername().equals(username) &&
+                    task.getDescription().equals(description)
+                );
     }
 
     public void editTask(Long id, String description, Integer priority, String dueDate) {
